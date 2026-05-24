@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuizMaster Pro – AI-Powered Quiz & Learning Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060910;
+      --surface: #0d1117;
+      --card: #111820;
+      --border: #1e2a38;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --gold: #f59e0b;
+      --text: #e8f0fe;
+      --muted: #6b7f99;
+      --green: #10b981;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 6%;
+      background: rgba(6,9,16,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.4rem;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent); color: #000;
+      padding: 0.55rem 1.4rem; border-radius: 8px;
+      font-weight: 700; font-size: 0.85rem;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 6% 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      color: var(--accent);
+      padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 1.5rem;
+      animation: fadeDown 0.6s ease both;
+    }
+    .badge::before { content: '●'; font-size: 0.5rem; }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+      animation: fadeDown 0.7s ease 0.1s both;
+    }
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      max-width: 580px;
+      color: var(--muted); font-size: 1.1rem; line-height: 1.7;
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.7s ease 0.2s both;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeDown 0.7s ease 0.3s both;
+    }
+    .btn-primary {
+      background: var(--accent); color: #000;
+      padding: 0.85rem 2rem; border-radius: 10px;
+      font-weight: 700; font-size: 1rem;
+      text-decoration: none; transition: transform 0.2s, opacity 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.85rem 2rem; border-radius: 10px;
+      font-weight: 500; font-size: 1rem;
+      text-decoration: none; transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+
+    .stats {
+      display: flex; gap: 3rem; margin-top: 4rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeDown 0.7s ease 0.4s both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800; color: var(--accent);
+    }
+    .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+    /* SECTIONS */
+    section { padding: 6rem 6%; }
+    .section-label {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800; line-height: 1.2;
+      letter-spacing: -1px; margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 500px; }
+
+    /* FEATURES */
+    .features { background: var(--surface); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .feature-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: rgba(0,212,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.2rem;
+    }
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem; font-weight: 700; margin-bottom: 0.6rem;
+    }
+    .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* PRICING */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem; margin-top: 3rem; max-width: 1000px;
+    }
+    .plan {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 2.2rem;
+      position: relative; transition: transform 0.3s;
+    }
+    .plan:hover { transform: translateY(-4px); }
+    .plan.popular {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, rgba(0,212,255,0.05), var(--card));
+    }
+    .popular-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #000;
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 1px;
+      padding: 0.3rem 1rem; border-radius: 100px;
+      text-transform: uppercase;
+    }
+    .plan-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .plan-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem; font-weight: 800;
+      color: var(--accent); margin: 1rem 0 0.3rem;
+    }
+    .plan-price span { font-size: 1rem; color: var(--muted); font-weight: 400; }
+    .plan-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .plan-features { list-style: none; margin-bottom: 2rem; }
+    .plan-features li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem; color: var(--muted);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .plan-features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+    .plan-btn {
+      display: block; text-align: center;
+      padding: 0.85rem; border-radius: 10px;
+      font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .plan-btn-outline {
+      border: 1px solid var(--border); color: var(--text);
+    }
+    .plan-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .plan-btn-filled { background: var(--accent); color: #000; }
+    .plan-btn-filled:hover { opacity: 0.85; }
+    .plan-btn-gold { background: var(--gold); color: #000; }
+    .plan-btn-gold:hover { opacity: 0.85; }
+
+    /* LEGAL PAGES */
+    .legal-section { background: var(--surface); }
+    .legal-content {
+      max-width: 800px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 3rem;
+      margin-top: 2rem;
+    }
+    .legal-content h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      margin: 1.8rem 0 0.6rem; color: var(--accent);
+    }
+    .legal-content h3:first-child { margin-top: 0; }
+    .legal-content p, .legal-content li {
+      color: var(--muted); font-size: 0.92rem; line-height: 1.8;
+    }
+    .legal-content ul { padding-left: 1.5rem; }
+    .legal-content li { margin-bottom: 0.4rem; }
+
+    /* CONTACT */
+    .contact-box {
+      max-width: 560px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 3rem;
+      margin-top: 3rem;
+    }
+    .contact-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(0,212,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .contact-item a { color: var(--accent); text-decoration: none; }
+
+    /* FOOTER */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 6%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    footer p { color: var(--muted); font-size: 0.85rem; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ANIMATIONS */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .stats { gap: 2rem; }
+      .legal-content { padding: 1.5rem; }
+      .contact-box { padding: 1.5rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Quiz<span>Master</span> Pro</div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#terms">Terms</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#pricing" class="nav-cta">Get Started</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">AI-Powered Learning Platform</div>
+  <h1>Learn Smarter with<br/><span class="highlight">QuizMaster Pro</span></h1>
+  <p class="hero-sub">An AI-powered quiz and learning platform combining gamification, proctoring, and adaptive learning for students, educators, and competitive learners.</p>
+  <div class="hero-btns">
+    <a href="#pricing" class="btn-primary">View Plans</a>
+    <a href="#features" class="btn-secondary">Explore Features</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">80+</div><div class="stat-label">API Routes</div></div>
+    <div class="stat"><div class="stat-num">35+</div><div class="stat-label">DB Tables</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Subscription Plans</div></div>
+    <div class="stat"><div class="stat-num">LLaMA</div><div class="stat-label">AI Engine</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">What We Offer</div>
+  <div class="section-title">Everything You Need to Learn & Grow</div>
+  <p class="section-sub">From AI-generated quizzes to proctored exams — QuizMaster Pro has it all.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Quiz Generation</h3>
+      <p>LLaMA 3.3 70B generates unique MCQs on any topic with profile-based personalisation and difficulty control.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎮</div>
+      <h3>Gamification & Coins</h3>
+      <p>Earn coins, XP, badges, and streaks. Daily spin wheel, referral rewards, and milestone bonuses keep you motivated.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>AI Proctoring</h3>
+      <p>Browser-based face detection, tab monitoring, copy/paste blocking, and auto-submit on max violations.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔥</div>
+      <h3>Streak System</h3>
+      <p>Daily streaks with escalating milestones up to 3,000 coins and XP. Freeze credits to protect your streak.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛡️</div>
+      <h3>Secure Authentication</h3>
+      <p>OTP email verification, JWT sessions, device fingerprinting, and new-login security alerts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Admin Dashboard</h3>
+      <p>Full platform control: user management, payment approval, analytics, bulk email, and live settings.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-label">Pricing</div>
+  <div class="section-title">Choose Your Plan</div>
+  <p class="section-sub">Start free and upgrade anytime. All plans include core quiz features.</p>
+  <div class="pricing-grid">
+
+    <!-- FREE -->
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">₹0 <span>/ forever</span></div>
+      <div class="plan-desc">Perfect to get started</div>
+      <ul class="plan-features">
+        <li>5 AI Quizzes per day</li>
+        <li>Basic gamification</li>
+        <li>2 freeze credits/month</li>
+        <li>Daily login rewards</li>
+        <li>Standard support</li>
+      </ul>
+      <a href="#contact" class="plan-btn plan-btn-outline">Get Started Free</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan popular">
+      <div class="popular-badge">Most Popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">₹300 <span>/ month</span></div>
+      <div class="plan-desc">For serious learners</div>
+      <ul class="plan-features">
+        <li>Unlimited AI Quizzes</li>
+        <li>Full gamification access</li>
+        <li>5 freeze credits/month</li>
+        <li>Priority support</li>
+        <li>Advanced analytics</li>
+      </ul>
+      <a href="#contact" class="plan-btn plan-btn-filled">Get Pro</a>
+    </div>
+
+    <!-- ELITE -->
+    <div class="plan">
+      <div class="plan-name">Elite</div>
+      <div class="plan-price">₹500 <span>/ month</span></div>
+      <div class="plan-desc">For power users & educators</div>
+      <ul class="plan-features">
+        <li>Everything in Pro</li>
+        <li>10 freeze credits/month</li>
+        <li>Elite exclusive events</li>
+        <li>Proctored exam access</li>
+        <li>Dedicated support</li>
+      </ul>
+      <a href="#contact" class="plan-btn plan-btn-outline">Get Elite</a>
+    </div>
+
+    <!-- 1 YEAR -->
+    <div class="plan">
+      <div class="plan-name">1-Year Plan</div>
+      <div class="plan-price">₹3,000 <span>/ year</span></div>
+      <div class="plan-desc">Best value — save ₹1,000 vs monthly</div>
+      <ul class="plan-features">
+        <li>All Elite features</li>
+        <li>12 months access</li>
+        <li>Unlimited everything</li>
+        <li>Early access to new features</li>
+        <li>Priority onboarding</li>
+      </ul>
+      <a href="#contact" class="plan-btn plan-btn-gold">Get 1-Year</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRIVACY POLICY -->
+<section class="legal-section" id="privacy">
+  <div class="section-label">Legal</div>
+  <div class="section-title">Privacy Policy</div>
+  <div class="legal-content">
+    <p><strong>Effective Date:</strong> May 2026 &nbsp;|&nbsp; <strong>Last Updated:</strong> May 2026</p>
+
+    <h3>1. Information We Collect</h3>
+    <p>We collect information you provide directly, including name, email address, and payment details when you register or subscribe. We also collect usage data such as quiz attempts, scores, and activity logs to improve your experience.</p>
+
+    <h3>2. How We Use Your Information</h3>
+    <ul>
+      <li>To provide and maintain the QuizMaster Pro platform</li>
+      <li>To process payments and manage subscriptions</li>
+      <li>To send transactional emails (OTP, receipts, alerts)</li>
+      <li>To improve AI quiz generation based on usage patterns</li>
+      <li>To enforce our anti-cheat and proctoring policies</li>
+    </ul>
+
+    <h3>3. Data Storage & Security</h3>
+    <p>Your data is stored securely using Supabase PostgreSQL with row-level security (RLS). Passwords are hashed using bcryptjs with 12 salt rounds. We use JWT authentication with 7-day expiry for all sessions.</p>
+
+    <h3>4. Payment Data</h3>
+    <p>Payments are processed via Razorpay. We do not store your card details. All transactions are encrypted and handled by Razorpay's PCI-DSS compliant infrastructure.</p>
+
+    <h3>5. Cookies</h3>
+    <p>We use session cookies for authentication and localStorage for user preferences. No third-party advertising cookies are used.</p>
+
+    <h3>6. Data Sharing</h3>
+    <p>We do not sell your personal data. We may share data with service providers (Razorpay, Groq AI, Supabase) solely to operate the platform.</p>
+
+    <h3>7. Your Rights</h3>
+    <p>You may request deletion of your account and data at any time by contacting us at harshsharma91000@gmail.com. We will process requests within 30 days.</p>
+
+    <h3>8. Contact</h3>
+    <p>For privacy concerns: <a href="mailto:harshsharma91000@gmail.com" style="color:var(--accent)">harshsharma91000@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- TERMS & CONDITIONS -->
+<section id="terms">
+  <div class="section-label">Legal</div>
+  <div class="section-title">Terms & Conditions</div>
+  <div class="legal-content">
+    <p><strong>Effective Date:</strong> May 2026</p>
+
+    <h3>1. Acceptance of Terms</h3>
+    <p>By accessing or using QuizMaster Pro, you agree to be bound by these Terms and Conditions. If you do not agree, please do not use our platform.</p>
+
+    <h3>2. Use of the Platform</h3>
+    <ul>
+      <li>You must be at least 13 years old to use QuizMaster Pro</li>
+      <li>You are responsible for maintaining the confidentiality of your account</li>
+      <li>You agree not to attempt to bypass our anti-cheat or proctoring systems</li>
+      <li>Sharing accounts is not permitted</li>
+    </ul>
+
+    <h3>3. Subscription & Payments</h3>
+    <p>Subscriptions are billed as per the plan selected (monthly or yearly). All payments are processed via Razorpay. Prices are listed in Indian Rupees (INR) and are inclusive of applicable taxes.</p>
+
+    <h3>4. Refund Policy</h3>
+    <p>We offer a 7-day refund policy from the date of purchase for all paid plans. Refund requests must be submitted to harshsharma91000@gmail.com within 7 days of payment. Refunds will be credited to the original payment method within 5–7 business days. No refunds will be issued after 7 days of purchase.</p>
+
+    <h3>5. AI-Generated Content</h3>
+    <p>Quizzes generated by our AI engine (LLaMA 3.3 70B via Groq) are for educational purposes. We do not guarantee 100% accuracy of AI-generated content.</p>
+
+    <h3>6. Proctoring & Academic Integrity</h3>
+    <p>By enabling proctored mode, you consent to face detection, screen recording, and activity monitoring during the quiz session. This data is stored securely and used solely for academic integrity verification.</p>
+
+    <h3>7. Termination</h3>
+    <p>We reserve the right to suspend or terminate accounts that violate these terms, engage in fraudulent activity, or attempt to abuse the coin/reward system.</p>
+
+    <h3>8. Limitation of Liability</h3>
+    <p>QuizMaster Pro is provided "as is". We are not liable for any indirect, incidental, or consequential damages arising from use of the platform.</p>
+
+    <h3>9. Changes to Terms</h3>
+    <p>We may update these terms at any time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+
+    <h3>10. Contact</h3>
+    <p>For any queries: <a href="mailto:harshsharma91000@gmail.com" style="color:var(--accent)">harshsharma91000@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="legal-section" id="contact">
+  <div class="section-label">Get In Touch</div>
+  <div class="section-title">Contact Us</div>
+  <p class="section-sub">Have questions about plans or need support? We're here to help.</p>
+  <div class="contact-box">
+    <div class="contact-item">
+      <div class="contact-icon">✉️</div>
+      <div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.2rem">Email</div>
+        <a href="mailto:harshsharma91000@gmail.com">harshsharma91000@gmail.com</a>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">🕐</div>
+      <div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.2rem">Support Hours</div>
+        <span>Monday – Saturday, 10:00 AM – 6:00 PM IST</span>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">📍</div>
+      <div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.2rem">Location</div>
+        <span>India</span>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">⚡</div>
+      <div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.2rem">Response Time</div>
+        <span>Within 24 hours</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 QuizMaster Pro · Developed by Harsh Sharma · All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#privacy">Privacy Policy</a>
+    <a href="#terms">Terms & Conditions</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
